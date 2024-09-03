@@ -1,0 +1,167 @@
+// creating circular linked list with deletes
+import java.util.*;
+
+public class CircularLinkedList {
+    static Node START;
+    static Node LAST;
+
+    static class Node {
+        int data;
+        Node next;
+
+        Node(int d) {
+            data = d;
+            next = null;
+        }
+    }
+    
+    public static void insertAnywhere(int data) {
+        Node n_node = new Node(data);
+        Node curr = START;
+        Node prev = null;
+        if (START == null) {
+            START = n_node;
+            LAST = n_node;
+            n_node.next = START; // Point to itself in a circular list
+        } else if (START.data > data) {
+            START = n_node;
+            n_node.next = curr;
+            LAST.next = n_node;
+            
+        }
+        else {
+            while (prev != LAST && curr.data <= data) {
+                prev = curr;
+                curr = curr.next;
+            }
+            if (prev == LAST) {
+                  n_node.next = START;
+                  prev.next = n_node;
+                  LAST = n_node;
+                  curr = null;
+                  prev = null;
+                  
+            }  else {
+                n_node.next = curr;
+                prev.next = n_node;
+                
+            }
+        }
+    }
+        
+    public static Node insertBeginning (int data) {
+        Node n_node = new Node(data);
+        
+        if (LAST == null) {
+             LAST = n_node;
+             START = n_node;
+        }
+        
+        n_node.next = LAST.next;
+        
+        LAST.next = n_node;
+    
+        return LAST;
+    }
+    
+    public static Node insertEnd (Node LAST, int data) {
+        Node n_node = new Node(data);
+ 
+        n_node.next = LAST.next;
+        LAST.next = n_node;
+        LAST = n_node;
+        return LAST;
+        
+    }
+    
+    public static void deleteBeginning() {
+        Node curr = LAST.next;
+        LAST.next = curr.next;
+        curr = null;
+    }
+    
+
+    public static void deleteByValue(int key) {
+               
+        Node curr = LAST.next;
+        Node prev = LAST.next;
+
+        // Search for the key and keep track of the previous node
+        while (prev != LAST && curr.data != key) {
+            prev = curr;
+            curr = curr.next;
+        }
+
+        // If the key is not found
+        if (curr == null)
+            return;
+
+        // Update pointers to remove the node
+        prev.next = curr.next;
+
+        return;
+    }
+
+    public static void deleteEnd() {
+        Node curr = START;
+        
+        while (curr.next != LAST) {
+            curr = curr.next;
+        }
+      
+        curr.next = START;
+        LAST = curr;
+  
+    }
+    
+    public static void traverseList (Node LAST) {
+        Node currNode = LAST.next;
+        System.out.print("Circular Linked List: ");
+        while (currNode != LAST) {
+            System.out.print(currNode.data + " ");
+            currNode = currNode.next;
+        }
+        System.out.print(LAST.data);
+        System.out.println("");
+    }
+
+    public static void main(String[] args) {
+        CircularLinkedList cllist = new CircularLinkedList();
+        int[] arr = {1, 2, 2, 0, 2, 0, 3, 4, 4, 3, 5};
+        
+        System.out.println("Middle Nodes to be Added" + Arrays.toString(arr)); 
+        
+        LAST = cllist.insertBeginning(4);
+        System.out.print("After inserting at beginning ");
+        traverseList(LAST);
+        LAST = cllist.insertEnd(LAST, 9);
+        System.out.print("After inserting on end ");
+        traverseList(LAST);
+        
+        for (int i = 0; i < arr.length; i++) {
+             insertAnywhere(arr[i]);
+        }
+        
+        System.out.print("After inserting middle nodes ");
+        traverseList(LAST);
+        
+        LAST = cllist.insertEnd(LAST, 92);
+        System.out.print("After inserting at end ");
+        
+        traverseList(LAST); 
+        
+        cllist.deleteBeginning();
+        System.out.print("After deleting at beginning ");
+        traverseList(LAST);
+        
+        cllist.deleteEnd();
+        System.out.print("After deleting from end ");
+        traverseList(LAST);
+        
+        cllist.deleteByValue(3);
+        System.out.print ("After removing a Node ");
+        traverseList(LAST);
+        
+        
+    }
+}
