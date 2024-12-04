@@ -1,0 +1,389 @@
+---------------
+1. 
+-----------------
+webpack.config.js
+// entry point (file name + path ) ==> next the module depencencies 
+// default configuration - src/index.js
+// once - minification, transpilation, reference resolution, bundling is done
+// output path and the name of the file <bundle.js>
+// all modules that webpack is dependent on is termed as loaders needed
+
+let path = require("path"), //path module of node framework
+HtmlWebpackPlugin = require('html-webpack-plugin'), //to load the index html file on request
+
+config = {
+    output: {
+        path: path.join(__dirname, '/dist'), //dist - distribution
+        filename: 'bundle.js'
+    },
+    // webpack 5 comes with devServer which loads in development mode
+    devServer: {
+        port: 9090, //localhost:9090
+        historyApiFallback : true //localhost:9090/user
+    },
+    // Rules of how webpack will take our files, complie & bundle them for the browser 
+    module: {
+        rules: [
+            {
+                test: /\.(js|jsx)$/,
+                exclude: /node_modules/,
+                use: {
+                  loader: 'babel-loader'
+                }
+            },
+            {
+                test: /\.css$/,
+                exclude: /node_modules/,
+                use: ['style-loader', 'css-loader']
+            },
+            {
+                test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                exclude: /node_modules/,
+                type: 'asset/resource',
+            }
+        ]
+    },
+    plugins: [new HtmlWebpackPlugin({ template: './src/index.html' })] //localhost:9090 - loads this html
+}
+
+module.exports = config;
+------------------------------------------
+index.html:
+---------------
+ <!DOCTYPE html>
+   <html>
+   <head>
+       <title>My React App</title>
+   </head>
+   <body>
+       <div id="root"></div>
+   </body>
+   </html>
+--------------------------------------------
+index.css:
+-------------------
+body {
+       background-color: #f0f0f0;
+       font-family: sans-serif;
+  }
+
+   h1 {
+       color: #333;
+   }
+--------------------------------------------
+index.js
+--------------------
+import React from 'react';
+import './index.css';
+
+   const App = () => {
+       return (
+           <div>
+               <h1>Hello, World!</h1>
+           </div>
+       );
+   };
+--------------------------------------------
+
+2. 
+After the SPA is loaded, React is able to update only what content needs to be changed
+
+3.
+--------------------------------------------
+Success.js
+--------------------------------------------
+import React, { Component } from 'react';
+
+class Success extends Component {
+  render() {
+    return (
+      <div>
+        <h2>Success!</h2>
+        <p>{this.props.message}</p>
+        <p>Problem #3</p>
+      </div>
+    );
+  }
+}
+
+export default Success;
+--------------------------------------------
+( a corresponding example app.js calling the component on button click event)
+--------------------------------------------
+import React from 'react';
+import Success from './Success';
+
+function App() {
+  const [showSuccess, setShowSuccess] = React.useState(false);
+
+  const handleSuccess = () => {
+    setShowSuccess(true);
+  };
+
+  return (
+    <div>
+      <button onClick={handleSuccess}>Show Success Message</button>
+      {showSuccess && <Success message="Congratulations!" />}
+    </div>
+  );
+}
+
+export default App;
+---------------------------------------------
+
+4.
+---------------------------------------------
+import React from 'react';
+
+function SuccessChild(props) {
+  return (
+    <div>
+      <p>Hello, {props.name}.</p>
+      <p>Address: {props.address}</p>
+    </div>
+  );
+}
+
+function Success() {
+  const name = "Fred Smith";
+  const address = "8432 Main St.";
+
+  return (
+    <div>
+      <h2>Success!</h2>
+      <SuccessChild name={name} address={address} />
+    </div>
+  );
+}
+
+export default Success; 
+----------------------------------------------
+
+5.
+---------------------------------------------
+import React from 'react';
+
+function SuccessStory ({ story }) {
+  return (
+    <div>
+      var randomNumber = Math.floor(Math.random() * 100)
+      <h4>{story.title}</h4>
+    </div>
+  );
+};
+
+function SuccessChild ({ storyComponent }) {
+  return (
+    <div>
+      <h3>Success Story</h3>
+      {storyComponent}
+    </div>
+  );
+};
+
+function Success() {
+  const storyData = {
+    title: 'Synergistic IT'
+  };
+
+  return (
+    <div>
+      <h1>Success Page</h1>
+      <SuccessChild storyComponent={<SuccessStory story={storyData} />} />
+    </div>
+  );
+};
+
+export default Success;
+-------------------------------------------------
+
+6.
+--------------------------------------------------
+import React from 'react';
+
+class UserSignIn extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.usernameEntered = React.createRef();
+    this.passwordEntered = React.createRef();
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    const username = this.usernameEntered.current.value;
+    const password = this.passwordEntered.current.value;
+
+    console.log('Username:', username);
+    console.log('Password:', password);
+  }
+
+  render() {
+    return (
+      <form onSubmit = {this.handleSubmit}>
+        <label>
+          Username:
+          <input type="text" ref = {this.usernameEntered} />
+        </label>
+        <label>
+          Password:
+          <input type="password" ref={this.passwordEntered} />
+        </label>
+        <button type="submit">Sign In</button>
+      </form>
+    );
+  }
+}
+
+export default UserSignIn;
+--------------------------------------------------
+
+7.
+--------------------------------------------------
+The Virtual DOM is a version of the actual DOM. When props or state changes, the virtual dom is 'diffed' (what's different) with the prior version before updating the actual DOM.
+--------------------------------------------------
+
+8.
+--------------------------------------------------
+import React, { useState } from 'react';
+
+const ChildComponent = ({ onGenerateRandomVal }) => {
+  const generateRandomVal = () => {
+    const randomVal = Math.random();
+    onGenerateRandom(randomVal);
+  };
+
+  return (
+    <div>
+      <h2>Child</h2>
+      <button onClick={generateRandomVal}>Generate Random Number</button>
+    </div>
+  );
+};
+
+
+const ParentComponent = () => {
+  const [randomVal, setRandomVal] = useState(null);
+
+  const handleRandomVal = (val) => {
+    setRandomValue(val);
+  };
+
+  return (
+    <div>
+      <h1>Parent</h1>
+      <p>Random Number from Child: {randomVal}</p>
+      <ChildComponent onGenerateRandom={handleRandomVal} />
+    </div>
+  );
+};
+
+--------------------------------------------------
+9.
+---------------------------------------------------
+componentDidMount(){
+    setTimeout(() => {
+        this.setState({
+            firstName : "The changed name"
+    })
+
+            this.refAddress.current.value = "Updated Address",
+            this.refSession.current.value = "A React component"
+        }, 2000);
+}
+
+shouldComponentUpdate(nextPops, nextState){
+    if (this.state.firstName == nextState.firstName ) {
+       return false 
+    } else {
+       return true      
+    }
+}
+
+getSnapshotBeforeUpdate(prevState, prevProps) {
+    console.log("snapshot before update");
+        
+    this.prevUser = prevState.user;
+    this.setState({
+        user : this.prevUser
+    })
+
+    return {
+        prevState,
+        prevProps
+    }
+}
+
+componentDidUpdate(prevState, prevProps){
+        console.log("componentDidUpdate");
+}
+
+//destruction
+componentWillUnmount(){
+}
+
+---------------------------------------------------
+
+10.
+----------------------------------------------------
+// duplicate
+//
+const MySelect = ({ initialValue, onValueChange }) => {
+  const [value, setValue] = useState("");
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  useEffect(() => {
+    onValueChange(value);
+  }, [value]);
+
+  return (
+    <select onChange={(e) => setValue(e.target.value)} value={value}>
+      <option>Option1</option>
+      <option>Option2</option>
+    </select>
+  );
+};
+
+// Parent
+const MyForm = () => {
+  const [initialState] = useState("Option1");
+
+  return (
+    <MySelect
+      initialValue={initialState}
+      onValueChange={(value) => {
+        console.log("Value Change", value);
+      }}
+    />
+  );
+};
+
+// improved
+const MySelect = ({ value, setValue }) => {
+  return (
+    <select onChange={(e) => setValue(e.target.value)} value={value}>
+      <option>Option1</option>
+      <option>Option2</option>
+    </select>
+  );
+};
+
+//parent
+const MyForm = () => {
+  const [value, setValue] = useState("Option1");
+
+  return (
+    <MySelect
+      value={value}
+      setValue={(value) => {
+        setValue(value);
+        console.log("Value Change", value);
+      }}
+    />
+  );
+};
+
